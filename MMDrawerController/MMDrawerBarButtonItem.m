@@ -117,9 +117,13 @@
     
     //Sizes
     CGFloat buttonWidth = CGRectGetWidth(self.bounds)*.80;
-    CGFloat buttonHeight = CGRectGetHeight(self.bounds)*.16;
+    // CFIS
+    //CGFloat buttonHeight = CGRectGetHeight(self.bounds)*.16;
+    CGFloat buttonHeight = CGRectGetHeight(self.bounds)*.08;
     CGFloat xOffset = CGRectGetWidth(self.bounds)*.10;
-    CGFloat yOffset = CGRectGetHeight(self.bounds)*.12;
+    // CFIS
+    //CGFloat yOffset = CGRectGetHeight(self.bounds)*.12;
+    CGFloat yOffset = CGRectGetHeight(self.bounds)*.18;
     CGFloat cornerRadius = 1.0;
     
     //// Color Declarations
