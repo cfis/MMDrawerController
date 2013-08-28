@@ -16,7 +16,7 @@ Official appledoc documentation can be found at [CocoaDocs](http://cocoadocs.org
 You can install MMDrawerController in your project by using [CocoaPods](https://github.com/cocoapods/cocoapods):
 
 ```Ruby
-pod 'MMDrawerController', '~> 0.3.0'
+pod 'MMDrawerController', '~> 0.4.0'
 ```
 
 ---
@@ -110,6 +110,15 @@ When a drawer is open, you can control how a user can interact with the center v
 
 ###Accessing the Drawer Controller from a Child View Controller
 You can use the `UIViewController+MMDrawerController` category in order to query the drawerController directly from child view controllers.
+
+###State Restoration
+Beginning with 0.4.0, `MMDrawerController` supports iOS state restoration. In order to opt in to state restoration for `MMDrawerController`, you must set the `restorationIdentifier` of your drawer controller. Instances of your `centerViewController`, `leftDrawerViewController` and `rightDrawerViewController` must also be configured with their own `restorationIdentifier` (and optionally a restorationClass) if you intend for those to be restored as well. If your MMDrawerController had an open drawer when your app was sent to the background, that state will also be restored.
+
+---
+##Subclassing
+If you plan to subclass `MMDrawerController`, import `MMDrawerController+Subclass.h` into your subclass to access protected methods for `MMDrawerController.` Note that several methods assume and require you to call super, so be sure to follow that convention.
+
+If there is specific functionality you need that is not supported by these methods, please open a Github issue explaining your needs and we can try and find a way to open up methods that can help you out.
 
 ---
 ##Bells and Whistles
