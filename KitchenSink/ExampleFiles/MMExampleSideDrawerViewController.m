@@ -24,6 +24,7 @@
 #import "MMSideDrawerTableViewCell.h"
 #import "MMSideDrawerSectionHeaderView.h"
 #import "MMLogoView.h"
+#import "MMNavigationController.h"
 
 @implementation MMExampleSideDrawerViewController
 
@@ -31,24 +32,59 @@
 {
     [super viewDidLoad];
 
-    _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+    if(OSVersionIsAtLeastiOS7()){
+        _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
+    }
+    else {
+        _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+    }
+    
     [self.tableView setDelegate:self];
     [self.tableView setDataSource:self];
     [self.view addSubview:self.tableView];
     [self.tableView setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
-    [self.tableView setSeparatorColor:[UIColor colorWithRed:49.0/255.0
-                                                      green:54.0/255.0
-                                                       blue:57.0/255.0
-                                                      alpha:1.0]];
-    [self.tableView setBackgroundColor:[UIColor colorWithRed:77.0/255.0
-                                                       green:79.0/255.0
-                                                        blue:80.0/255.0
-                                                       alpha:1.0]];
+    
+    UIColor * tableViewBackgroundColor;
+    if(OSVersionIsAtLeastiOS7()){
+        tableViewBackgroundColor = [UIColor colorWithRed:110.0/255.0
+                                                   green:113.0/255.0
+                                                    blue:115.0/255.0
+                                                   alpha:1.0];
+    }
+    else {
+        tableViewBackgroundColor = [UIColor colorWithRed:77.0/255.0
+                                                   green:79.0/255.0
+                                                    blue:80.0/255.0
+                                                   alpha:1.0];
+    }
+    [self.tableView setBackgroundColor:tableViewBackgroundColor];
+    
+    [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     
     [self.view setBackgroundColor:[UIColor colorWithRed:66.0/255.0
                                                   green:69.0/255.0
                                                    blue:71.0/255.0
                                                   alpha:1.0]];
+    
+    UIColor * barColor = [UIColor colorWithRed:161.0/255.0
+                                         green:164.0/255.0
+                                          blue:166.0/255.0
+                                         alpha:1.0];
+    if([self.navigationController.navigationBar respondsToSelector:@selector(setBarTintColor:)]){
+        [self.navigationController.navigationBar setBarTintColor:barColor];
+    }
+    else {
+        [self.navigationController.navigationBar setTintColor:barColor];
+    }
+
+
+    NSDictionary *navBarTitleDict;
+    UIColor * titleColor = [UIColor colorWithRed:55.0/255.0
+                                           green:70.0/255.0
+                                            blue:77.0/255.0
+                                           alpha:1.0];
+    navBarTitleDict = @{NSForegroundColorAttributeName:titleColor};
+    [self.navigationController.navigationBar setTitleTextAttributes:navBarTitleDict];
     
     self.drawerWidths = @[@(160),@(200),@(240),@(280),@(320)];
     
@@ -71,6 +107,10 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)contentSizeDidChange:(NSString *)size{
+    [self.tableView reloadData];
 }
 
 #pragma mark - Table view data source
@@ -281,18 +321,33 @@
 }
 
 -(UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    MMSideDrawerSectionHeaderView * headerView =  [[MMSideDrawerSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 20.0f)];
+    MMSideDrawerSectionHeaderView * headerView;
+    if(OSVersionIsAtLeastiOS7()){
+        headerView =  [[MMSideDrawerSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 56.0)];
+    }
+    else {
+        headerView =  [[MMSideDrawerSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 23.0)];
+    }
     [headerView setAutoresizingMask:UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth];
     [headerView setTitle:[tableView.dataSource tableView:tableView titleForHeaderInSection:section]];
     return headerView;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return 23.0;
+    if(OSVersionIsAtLeastiOS7()){
+        return 56.0;
+    }
+    else {
+        return 23.0;
+    }
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     return 40.0;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
+    return 0.0;
 }
 
 #pragma mark - Table view delegate
@@ -301,9 +356,9 @@
 {
     switch (indexPath.section) {
         case MMDrawerSectionViewSelection:{
-            MMExampleCenterTableViewController * center = [[MMExampleCenterTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            MMExampleCenterTableViewController * center = [[MMExampleCenterTableViewController alloc] init];
             
-            UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:center];
+            UINavigationController * nav = [[MMNavigationController alloc] initWithRootViewController:center];
             
             if(indexPath.row%2==0){
                 [self.mm_drawerController

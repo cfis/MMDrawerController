@@ -18,26 +18,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#import "MMExampleViewController.h"
 
-#import "MMCenterTableViewCell.h"
+@interface MMExampleViewController ()
 
-@implementation MMCenterTableViewCell
+@end
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+@implementation MMExampleViewController
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        [self setAccessoryCheckmarkColor:[UIColor colorWithRed:13.0/255.0
-                                                         green:88.0/255.0
-                                                          blue:161.0/255.0
-                                                         alpha:1.0]];
+        // Custom initialization
     }
     return self;
 }
 
--(void)updateContentForNewContentSize{
-    if([[UIFont class] respondsToSelector:@selector(preferredFontForTextStyle:)]){
-        [self.textLabel setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]];
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    if(OSVersionIsAtLeastiOS7()){
+        [[NSNotificationCenter defaultCenter]
+         addObserver:self
+         selector:@selector(contentSizeDidChangeNotification:)
+         name:UIContentSizeCategoryDidChangeNotification
+         object:nil];
     }
 }
+
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter]
+     removeObserver:self];
+}
+
+-(void)contentSizeDidChangeNotification:(NSNotification*)notification{
+    [self contentSizeDidChange:notification.userInfo[UIContentSizeCategoryNewValueKey]];
+}
+
+-(void)contentSizeDidChange:(NSString *)size{
+    //Implement in subclass
+}
+
 @end

@@ -56,6 +56,10 @@
     NSLog(@"Left did disappear");
 }
 
+-(void)viewDidLoad{
+    [super viewDidLoad];
+    [self setTitle:@"Left Drawer"];
+}
 
 -(NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
     

@@ -27,6 +27,7 @@
 #import "MMCenterTableViewCell.h"
 #import "MMExampleLeftSideDrawerViewController.h"
 #import "MMExampleRightSideDrawerViewController.h"
+#import "MMNavigationController.h"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -43,9 +44,9 @@ typedef NS_ENUM(NSInteger, MMCenterViewControllerSection){
 
 @implementation MMExampleCenterTableViewController
 
-- (id)initWithStyle:(UITableViewStyle)style
+- (id)init
 {
-    self = [super initWithStyle:style];
+    self = [super init];
     if (self) {
         [self setRestorationIdentifier:@"MMExampleCenterControllerRestorationKey"];
     }
@@ -55,6 +56,12 @@ typedef NS_ENUM(NSInteger, MMCenterViewControllerSection){
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
+    [self.tableView setDelegate:self];
+    [self.tableView setDataSource:self];
+    [self.view addSubview:self.tableView];
+    [self.tableView setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
     
     UITapGestureRecognizer * doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubleTap:)];
     [doubleTap setNumberOfTapsRequired:2];
@@ -69,11 +76,22 @@ typedef NS_ENUM(NSInteger, MMCenterViewControllerSection){
     [self setupLeftMenuButton];
     [self setupRightMenuButton];
     
-    [self.navigationController.navigationBar setTintColor:[UIColor
-                                                           colorWithRed:78.0/255.0
-                                                           green:156.0/255.0
-                                                           blue:206.0/255.0
-                                                           alpha:1.0]];
+    if(OSVersionIsAtLeastiOS7()){
+        UIColor * barColor = [UIColor
+                              colorWithRed:247.0/255.0
+                              green:249.0/255.0
+                              blue:250.0/255.0
+                              alpha:1.0];
+        [self.navigationController.navigationBar setBarTintColor:barColor];
+    }
+    else {
+        UIColor * barColor = [UIColor
+                              colorWithRed:78.0/255.0
+                              green:156.0/255.0
+                              blue:206.0/255.0
+                              alpha:1.0];
+        [self.navigationController.navigationBar setTintColor:barColor];
+    }
     
     
     MMLogoView * logo = [[MMLogoView alloc] initWithFrame:CGRectMake(0, 0, 29, 31)];
@@ -117,6 +135,10 @@ typedef NS_ENUM(NSInteger, MMCenterViewControllerSection){
 -(void)setupRightMenuButton{
     MMDrawerBarButtonItem * rightDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(rightDrawerButtonPress:)];
     [self.navigationItem setRightBarButtonItem:rightDrawerButton animated:YES];
+}
+
+-(void)contentSizeDidChange:(NSString *)size{
+    [self.tableView reloadData];
 }
 
 #pragma mark - Table view data source
@@ -249,31 +271,6 @@ typedef NS_ENUM(NSInteger, MMCenterViewControllerSection){
             break;
     }
 }
-
--(UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView * containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 30)];
-    
-    UILabel * titleLabel = [[UILabel alloc] initWithFrame:CGRectInset(containerView.bounds, 14, 0)];
-    
-    [titleLabel setBackgroundColor:[UIColor clearColor]];
-    [titleLabel setText:[tableView.dataSource tableView:tableView titleForHeaderInSection:section]];
-    [titleLabel setFont:[UIFont boldSystemFontOfSize:18.0]];
-    [titleLabel setTextColor:[UIColor colorWithRed:3.0/255.0
-                                             green:48.0/255.0
-                                              blue:77.0/255.0
-                                             alpha:1.0]];
-    [titleLabel setShadowColor:[[UIColor whiteColor] colorWithAlphaComponent:.5]];
-    [titleLabel setShadowOffset:CGSizeMake(0, 1)];
-    
-    [containerView addSubview:titleLabel];
-    
-    return containerView;
-}
-
--(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return 30;
-}
-
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -295,7 +292,7 @@ typedef NS_ENUM(NSInteger, MMCenterViewControllerSection){
         case MMCenterViewControllerSectionLeftViewState:
         case MMCenterViewControllerSectionRightViewState:{
             UIViewController * sideDrawerViewController;
-            MMDrawerSide drawerSide;
+            MMDrawerSide drawerSide = MMDrawerSideNone;
             if(indexPath.section == MMCenterViewControllerSectionLeftViewState){
                 sideDrawerViewController = self.mm_drawerController.leftDrawerViewController;
                 drawerSide = MMDrawerSideLeft;
@@ -326,13 +323,15 @@ typedef NS_ENUM(NSInteger, MMCenterViewControllerSection){
             else {
                 if(drawerSide == MMDrawerSideLeft){
                     UIViewController * vc = [[MMExampleLeftSideDrawerViewController alloc] init];
-                    [self.mm_drawerController setLeftDrawerViewController:vc];
+                    UINavigationController * navC = [[MMNavigationController alloc] initWithRootViewController:vc];
+                    [self.mm_drawerController setLeftDrawerViewController:navC];
                     [self setupLeftMenuButton];
                     
                 }
                 else if(drawerSide == MMDrawerSideRight){
                     UIViewController * vc = [[MMExampleRightSideDrawerViewController alloc] init];
-                    [self.mm_drawerController setRightDrawerViewController:vc];
+                    UINavigationController * navC = [[MMNavigationController alloc] initWithRootViewController:vc];
+                    [self.mm_drawerController setRightDrawerViewController:navC];
                     [self setupRightMenuButton];
                 }
                 [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];

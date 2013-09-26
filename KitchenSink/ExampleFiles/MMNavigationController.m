@@ -17,27 +17,22 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+#import "MMNavigationController.h"
+#import "UIViewController+MMDrawerController.h"
 
+@interface MMNavigationController ()
 
-#import "MMCenterTableViewCell.h"
+@end
 
-@implementation MMCenterTableViewCell
+@implementation MMNavigationController
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self) {
-        [self setAccessoryCheckmarkColor:[UIColor colorWithRed:13.0/255.0
-                                                         green:88.0/255.0
-                                                          blue:161.0/255.0
-                                                         alpha:1.0]];
+-(UIStatusBarStyle)preferredStatusBarStyle{
+    if(self.mm_drawerController.showsStatusBarBackgroundView){
+        return UIStatusBarStyleLightContent;
     }
-    return self;
-}
-
--(void)updateContentForNewContentSize{
-    if([[UIFont class] respondsToSelector:@selector(preferredFontForTextStyle:)]){
-        [self.textLabel setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]];
+    else {
+        return UIStatusBarStyleDefault;
     }
 }
+
 @end

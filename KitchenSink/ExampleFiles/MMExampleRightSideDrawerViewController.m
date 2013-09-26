@@ -54,6 +54,11 @@
     NSLog(@"Right did disappear");
 }
 
+-(void)viewDidLoad{
+    [super viewDidLoad];
+    [self setTitle:@"Right Drawer"];
+}
+
 -(NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
     
     if(section == MMDrawerSectionDrawerWidth)
